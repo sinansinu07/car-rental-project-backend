@@ -11,6 +11,8 @@ const carSchema = new Schema({
     description: String,
     price: Number,
     color: String,
+    transmissions: String,
+    rating: Number,
     carImage: {
         image_url: {
                 type: String,

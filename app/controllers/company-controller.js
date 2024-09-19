@@ -6,7 +6,7 @@ const companyCltr = {}
 // Get all products
 companyCltr.listCompanies = async (req, res)=>{
     try{
-        const companies = await Company.find();
+        const companies = await Company.find()
         res.status(201).json(companies)
     }catch(err){
         res.status(500).json('Internal Server Error')

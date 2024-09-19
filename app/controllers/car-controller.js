@@ -1,12 +1,15 @@
 const Car = require('../models/car-model')
 const cloudinary = require('../../config/cloudinary')
 const _ = require('lodash');
+const { findById } = require('../models/company-model');
 const carCltr = {}
 
 // Get all products
 carCltr.listCars = async (req, res)=>{
     try{
-        const cars = await Car.find();
+        const search = req.query.search || ''
+        const searchQuery = { name : { $regex : search, $options : 'i' } }
+        const cars = await Car.find(searchQuery).populate('company', ['name'])
         res.status(201).json(cars)
     }catch(err){
         res.status(500).json('Internal Server Error')
@@ -30,7 +33,7 @@ carCltr.create = async (req, res)=>{
     //     return res.status(400).json({error:errors.array()})
     // }
     // console.log(req)
-    const body = _.pick(req.body, ['name', 'description', 'price', 'color'])
+    const body = _.pick(req.body, ['name', 'description', 'price', 'color', 'transmissions', 'rating'])
     console.log(body)
     const car = new Car(body)
     try {
@@ -45,7 +48,8 @@ carCltr.create = async (req, res)=>{
 
         car.carImage = { image_url: result.secure_url };
 
-        const carObj = await car.save();
+        await car.save();
+        const carObj = await Car.findById(car._id).populate('company', ['name'])
         res.status(201).json(carObj);
     } catch (err) {
         console.error('Error uploading image:', err);
